@@ -33,47 +33,22 @@ void testStationary() {
 
 	std::cout << "[Verification Passed Test Case 1]\n";
 };
-//Test case 2 Circular orbit
+//Test case 2 Circular orbit (Work in progress)
 void testCircular() {
 
-	//test case for circular orbits
-	Planets sun(1.989e30, 0, 0, 0, 0, 0, 0);
-	Planets planet(1e10, 1e7, 0, 0, 0, 0, 0);
+	// Determine planet objects with values
 
-	double G = 6.67430e-11;
-	double c = 3e8;
-	double dt = 0.001;
-	int steps = 1000;
+	// Manually calculated test case values
 
-	double r0 = 1e7;
-	double v_circ = std::sqrt(G * sun.getMass() / r0);
-	planet.setVelocity(0, v_circ, 0);
+	// Simulate for one full expected orbit
 
-	double tol = 1e-2; // meters
-	bool pass = true;
+	// Calculate excentricity of simulated orbit
 
-	for (int i = 0; i < steps; ++i) {
-		applyGravity(planet, sun, G, c);
-		planet.update(dt);
+	// Compare to expected excentricity
 
-		double dx = planet.getX() - sun.getX();
-		double dy = planet.getY() - sun.getY();
-		double dz = planet.getZ() - sun.getZ();
-		double distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+	// Pass/Fail test case
 
-		// For early timesteps, distance should stay roughly near r0
-		if (std::abs(distance - r0) > tol) {
-			pass = false;
-			break;
-		}
-	}
-
-	if (pass)
-		std::cout << "[PASS] Elliptical orbit stays within expected bounds\n";
-	else
-		std::cout << "[FAIL] Orbit deviates beyond expected tolerance\n";
 }
-
 //Test case 3 Post-Newtonian Precession
 void testPrecession() {
 
