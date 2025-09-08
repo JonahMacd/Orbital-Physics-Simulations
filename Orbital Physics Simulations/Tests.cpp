@@ -37,17 +37,27 @@ void testStationary() {
 void testCircular() {
 
 	// Determine planet objects with values
+	Planets sun(1.989e30, 0, 0, 0, 0, 0, 0);
+	Planets planet(1e10, 1e7, 0, 0, 0, 0, 0);
+	double G = 6.67430e-11;
 
 	// Manually calculated test case values
+	double expected_rmin = 1e7;
+	double expected_rmax = 1e7;
+
+	double tol = 1e-3;
 
 	// Simulate for one full expected orbit
 
-	// Calculate excentricity of simulated orbit
+	double rMin = find_rMin(planet, sun);
+	double rMax = find_rMax(planet, sun);
 
 	// Compare to expected excentricity
+	assert(std::abs(rMin - expected_rmin) < tol);
+	assert(std::abs(rMax - expected_rmax) < tol);
 
 	// Pass/Fail test case
-
+	std::cout << "[Verification Passed Test Case 2]\n";
 }
 //Test case 3 Post-Newtonian Precession
 void testPrecession() {
