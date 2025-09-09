@@ -22,7 +22,8 @@ public:
 
 	};
 
-	void update(double dt);
+	void updatePosition(double dt);
+	void updateVelocity(double dt, double ax_new, double ay_new, double az_new);
 	void applyForce(double fx, double fy, double fz);
 
 	double getX() const;
@@ -31,6 +32,9 @@ public:
 	double getVx() const;
 	double getVy() const;
 	double getVz() const;
+	double getAx() const;
+	double getAy() const;
+	double getAz() const;
 	double getMass() const;
 
 private:

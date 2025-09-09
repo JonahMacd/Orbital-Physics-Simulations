@@ -4,7 +4,7 @@
 
 Planets dummy(1, 0, 0, 0, 0, 0, 0);
 
-double findDistance(Planets& body1, Planets& body2) {
+Distance findDistance(Planets& body1, Planets& body2) {
 
 	//Compute radius vector from body 1 to body 2
 	double dx = body2.getX() - body1.getX();
@@ -13,14 +13,24 @@ double findDistance(Planets& body1, Planets& body2) {
 	double r = std::sqrt((dx * dx) + (dy * dy) + (dz * dz));
 
 	// return distance values
-	return r, dx, dy, dz;
-};
+	return {r, dx, dy, dz};
+}
 
-double findAngularMomentum(Planets& body) {
+AngularMomentum findAngularMomentum(Planets& body1, Planets& body2) {
 
 	// Initilize (oooh fancy word) variables (trying to be object oriented :/ )
-	double r, dx, dy, dz = findDistance(body, dummy);
-	double v, vx, vy, vz = findVelocity(body);
+	
+	Distance d = findDistance(body1, body2);
+	double r = d.r;
+	double dx = d.dx;
+	double dy = d.dy;
+	double dz = d.dz;
+
+	Velocity c = findVelocity(body1, body2);
+	double v = c.v;
+	double vx = c.vx;
+	double vy = c.vy;
+	double vz = c.vz;
 
 	// calculate angular momentum paramaters
 	double Lx = dy * vz - dz * vy;
@@ -30,14 +40,23 @@ double findAngularMomentum(Planets& body) {
 	double L = sqrt(Lx * Lx + Ly * Ly + Lz * Lz);
 
 	// return angular momentum values
-	return L, Lx, Ly, Lz;
+	return {L, Lx, Ly, Lz};
 };
 
-double findCorrectedAcceleration(Planets& body1, Planets& body2, double G, double c) {
+CorrectedAcceleration findCorrectedAcceleration(Planets& body1, Planets& body2, double G, double c) {
 
 	// Initilize variables again
-	double r, dx, dy, dz = findDistance(body1, body2);
-	double L, Lx, Ly, Lz = findAngularMomentum(body1);
+	Distance d = findDistance(body1, body2);
+	double r = d.r;
+	double dx = d.dx;
+	double dy = d.dy;
+	double dz = d.dz;
+
+	AngularMomentum a = findAngularMomentum(body1, body2);
+	double L = a.L;
+	double Lx = a.Lx;
+	double Ly = a.Ly;
+	double Lz = a.Lz;
 
 	// General relativistic correctoin factor
 	double correctionFactor = 1 + (3 * L * L) / ((r * r) * (c * c));
@@ -48,27 +67,36 @@ double findCorrectedAcceleration(Planets& body1, Planets& body2, double G, doubl
 	double az = G * body2.getMass() * dz / (r * r * r) * correctionFactor;
 
 	// return acceleration values
-	return ax, ay, az;
+	return { ax, ay, az };
 };
 
-double findVelocity(Planets& body1) {
+Velocity findVelocity(Planets& body1, Planets& body2) {
 
 	// same as all the other fucntions but is velocity instead
 
-	double vx = body1.getVx();
-	double vy = body1.getVy();
-	double vz = body1.getVz();
+	double vx = body1.getVx() - body2.getVx();
+	double vy = body1.getVy() - body2.getVy();
+	double vz = body1.getVz() - body2.getVz();
 
 	double v = std::sqrt((vx * vx) + (vy * vy) + (vz * vz));
 
-	return v, vx, vy, vz;
+	return { v, vx, vy, vz };
 };
 
-double findSpecificAngularMomentum(Planets& body1, Planets& body2) {
+SpecificAngularMomentum findSpecificAngularMomentum(Planets& body1, Planets& body2) {
 
 	//specific angluar momentum (I wont lie, I dont know how this is different from normal angular momentum but okay)
-	double r, dx, dy, dz = findDistance(body1, body2);
-	double v, vx, vy, vz = findVelocity(body1);
+	Distance d = findDistance(body1, body2);
+	double r = d.r;
+	double dx = d.dx;
+	double dy = d.dy;
+	double dz = d.dz;
+
+	Velocity c = findVelocity(body1, body2);
+	double v = c.v;
+	double vx = c.vx;
+	double vy = c.vy;
+	double vz = c.vz;
 
 	double hx = dy * vz - dz * vy;
 	double hy = dz * vx - dx * vz;
@@ -76,7 +104,7 @@ double findSpecificAngularMomentum(Planets& body1, Planets& body2) {
 
 	double h = std::sqrt((hx * hx) + (hy * hy) + (hz * hz));
 
-	return h, hx, hy, hz;
+	return { h, hx, hy, hz };
 };
 
 double findMu(Planets& body1, Planets& body2, double G) {
@@ -90,11 +118,21 @@ double findMu(Planets& body1, Planets& body2, double G) {
 	return mu;
 };
 
-double findSpecificEnergy(Planets& body1, Planets& body2) {
+double findSpecificEnergy(Planets& body1, Planets& body2, double G) {
 
 	// specific energy also confuses me but this is a function to find it, I can calculate it but can't explain it
-	double r, dx, dy, dz = findDistance(body1, body2);
-	double v, vx, vy, vz = findVelocity(body1);
+	Distance d = findDistance(body1, body2);
+	double r = d.r;
+	double dx = d.dx;
+	double dy = d.dy;
+	double dz = d.dz;
+
+	Velocity c = findVelocity(body1, body2);
+	double v = c.v;
+	double vx = c.vx;
+	double vy = c.vy;
+	double vz = c.vz;
+
 	double mu = findMu(body1, body2);
 
 	double epsilon = ((v * v) / 2) - (mu / r);
@@ -105,9 +143,14 @@ double findSpecificEnergy(Planets& body1, Planets& body2) {
 double findEccentricity(Planets& body1, Planets& body2, double G, double c) {
 
 	// calculates how non-circle your circles are
-	double h, hx, hy, hz = findSpecificAngularMomentum(body1, body2);
+	SpecificAngularMomentum d = findSpecificAngularMomentum(body1, body2);
+	double h = d.h;
+	double hx = d.hx;
+	double hy = d.hy;
+	double hz = d.hz;
+
 	double mu = findMu(body1, body2, G);
-	double epsilon = findSpecificEnergy(body1, body2);
+	double epsilon = findSpecificEnergy(body1, body2, G);
 
 	double eccentricity = std::sqrt(1 + (2 * epsilon * h * h) / (mu * mu));
 
@@ -115,10 +158,10 @@ double findEccentricity(Planets& body1, Planets& body2, double G, double c) {
 
 };
 
-double findSemiMajorAxis(Planets& body1, Planets& body2) {
+double findSemiMajorAxis(Planets& body1, Planets& body2, double G) {
 
 	//semi majour axis or your "a" value in your orbit
-	double epsilon = findSpecificEnergy(body1, body2);
+	double epsilon = findSpecificEnergy(body1, body2, G);
 	double mu = findMu(body1, body2);
 
 	double a = -mu / (2 * epsilon);
@@ -127,7 +170,7 @@ double findSemiMajorAxis(Planets& body1, Planets& body2) {
 
 };
 
-double find_rMax(Planets& body1, Planets& body2) {
+double find_rMax(Planets& body1, Planets& body2, double G, double c) {
 	
 	//maximum radius of ellipse
 	double a = findSemiMajorAxis(body1, body2);
@@ -138,11 +181,11 @@ double find_rMax(Planets& body1, Planets& body2) {
 	return rMax;
 };
 
-double find_rMin(Planets& body1, Planets& body2) {
+double find_rMin(Planets& body1, Planets& body2, double G, double c) {
 
 	// minimum radius of ellipse
-	double a = findSemiMajorAxis(body1, body2);
-	double e = findEccentricity(body1, body2);
+	double a = findSemiMajorAxis(body1, body2, G);
+	double e = findEccentricity(body1, body2, G, c);
 
 	double rMin = a * (1 - e);
 
@@ -154,19 +197,30 @@ void applyGravity(Planets& body1, Planets& body2, double G, double c) {
 	//Compute radius vectors
 
 		//compute radius vector from body1 to body2
-	double r, dx, dy, dz = findDistance(body1, body2);
+	Distance d = findDistance(body1, body2);
+	double r = d.r;
+	double dx = d.dx;
+	double dy = d.dy;
+	double dz = d.dz;
 
 	//Compute angular momentum per unit mass
 
-	double L, Lx, Ly, Lz = findAngularMomentum(body1);
+	SpecificAngularMomentum e = findSpecificAngularMomentum(body1, body2);
+	double h = e.h;
+	double hx = e.hx;
+	double hy = e.hy;
+	double hz = e.hz;
 
 	//Compute Newtonian and Post-Newtonian factor
 
-	double correctionFactor = 1 + (3 * L * L) / ((r * r) * (c * c));
+	double correctionFactor = 1 + (3 * h * h) / ((r * r) * (c * c));
 
 	//Compute accelerations
 
-	double ax, ay, az = findCorrectedAcceleration(body1, body2, G, c);
+	CorrectedAcceleration b = findCorrectedAcceleration(body1, body2, G, c);
+	double ax = b.ax;
+	double ay = b.ay;
+	double az = b.az;
 
 	//Apply acceleration as a force
 
